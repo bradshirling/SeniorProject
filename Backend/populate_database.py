@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import shutil
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -27,6 +28,10 @@ def main():
     chunks = split_documents(documents)
     add_to_chroma(chunks)
 
+def reload_documents():
+    documents =load_documents()
+    chunks = split_documents(documents)
+    add_to_chroma(chunks)
 
 def load_documents():
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
@@ -99,10 +104,13 @@ def calculate_chunk_ids(chunks):
 
     return chunks
 
+def restart_flask():
+    os.execv(sys.executable, ['python'] + sys.argv)
 
 def clear_database():
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
+    restart_flask()
 
 
 if __name__ == "__main__":

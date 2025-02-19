@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url("tnstateimg.jpeg"); ;
+            background-image: url("tnstateimg.jpeg");
             color: #333;
             display: flex;
             justify-content: center;
@@ -74,6 +74,23 @@
             color: red;
             font-weight: bold;
         }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #000000;
+            bottom: 0;
+            right: 0;
+            position: fixed;
+        }
+
+        footer a {
+            color: #0e07db;;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -88,7 +105,7 @@
     </div>
 
     <script>
-        document.getElementById('query-btn').addEventListener('click', async () => {
+        const handleQuery = async () => {
             const query = document.getElementById('query-input').value;
             const resultElement = document.getElementById('query-results');
             resultElement.textContent = "Loading...";
@@ -121,7 +138,17 @@
             } catch (error) {
                 resultElement.innerHTML = `<span class="error">Error: ${error.message}</span>`;
             }
+        };
+        document.getElementById('query-btn').addEventListener('click', handleQuery);
+
+        document.getElementById('query-input').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                handleQuery();
+            }    
         });
     </script>
 </body>
+<footer>
+    <a href="admin.html">Admin Portal</a>
+</footer>
 </html>

@@ -8,9 +8,13 @@ from get_embedding_function import get_embedding_function
 CHROMA_PATH = "chroma"
 
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+You are answering a student's question based only on the following official university registration documents:
 
 {context}
+
+Answer in 250 words or less unless absolouteley needed. If the context does not contain an answer, say "I don't have enough information to answer that."
+
+Do not make up any information.
 
 ---
 
@@ -18,8 +22,7 @@ Answer the question based on the above context: {question}
 """
 
 
-def main():
-    # Create CLI.
+def main():    
     parser = argparse.ArgumentParser()
     parser.add_argument("query_text", type=str, help="The query text.")
     args = parser.parse_args()
@@ -27,22 +30,31 @@ def main():
     query_rag(query_text)
 
 
-def query_rag(query_text: str):
-    # Prepare the DB.
+def query_rag(query_text: str):    
     embedding_function = get_embedding_function()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
-    # Search the DB.
+    # Retrieve documents with scores
     results = db.similarity_search_with_score(query_text, k=5)
 
-    context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+    # Set a threshold to filter out low-quality matches
+    RELEVANCE_THRESHOLD = 0.3  # Adjust as needed
+    filtered_results = [doc for doc, score in results if score >= RELEVANCE_THRESHOLD]
+
+    # If no highly relevant results, return a fallback message
+    if not filtered_results:
+        print("No highly relevant documents found. Please refine your query.")
+        return {"response": "I'm not sure. Can you ask in a different way?", "sources": []}
+
+    # Concatenate only the most relevant documents
+    context_text = "\n\n---\n\n".join([doc.page_content for doc in filtered_results])
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
 
-    model = Ollama(model="mistral")
+    model=Ollama(model="mistral")
     response_text = model.invoke(prompt)
 
-    sources = [doc.metadata.get("id", None) for doc, _score in results]
+    sources = [doc.metadata.get("id", None) for doc in filtered_results]
     formatted_response = {
         "response": response_text,
         "sources": sources,
