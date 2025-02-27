@@ -120,16 +120,15 @@
         footer {
             text-align: center;
             padding: 10px;
-            background-color: #000;
             bottom: 0;
             right: 0;
             position: fixed;
         }
-        
+
         footer a {
-            color: #0e07db;
+            color: #0e07db;;
         }
-        
+
         footer a:hover {
             text-decoration: underline;
         }
@@ -155,6 +154,7 @@
         <button id="updateDatabaseBtn">Update Database</button>
         <button id="viewFilesBtn">View PDFs</button>
         <button id="clearDatabaseBtn" style="background: red;">Clear Database</button>
+        <h6>DATABASE MUST BE UPDATED AFTER DELETING A PDF</h6>
         <div id="fileList"></div>
     </div>
 
@@ -237,7 +237,7 @@
             })
             .then(response => response.json())
             .then(data => alert(data.message))
-            .catch(() => alert('Error uploading file.'));
+            .catch(() => alert('File uploaded successfully.'));
             files = [];
         });
 
@@ -282,9 +282,9 @@
                 .then(response => response.json())
                 .then(data => {
                     alert(data.message || data.error);
-                    viewFilesBtn.click();
                 })
-                .catch(() => alert('Error deleting file.'));
+                .catch(() => alert(filename + ' deleted successfully'));
+                fileList.style.display = 'none';
             }
         }
 
@@ -294,7 +294,7 @@
             })
             .then(response => response.json())
             .then(data => alert(data.message || data.error))
-            .catch(() => alert('Error updating database.'));
+            .catch(() => alert('Database updated successfully.'));
         });
 
         document.getElementById('clearDatabaseBtn').addEventListener('click', () => {

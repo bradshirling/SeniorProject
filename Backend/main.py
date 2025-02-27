@@ -39,6 +39,7 @@ def upload_file():
     file = request.files['file']
     if file.filename.endswith('.pdf'):
         file.save(os.path.join(DATA_FOLDER, file.filename))
+        reload_documents()
         return jsonify({'message': 'File uploaded successfully'}), 200
     return jsonify({'error': 'Only PDF files allowed'}), 400
 
@@ -56,6 +57,8 @@ def delete_file():
     if os.path.exists(file_path):
         try:
             os.remove(file_path)
+            clear_database()
+            #reload_documents()
             return jsonify({'message': f'{filename} deleted successfully'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500

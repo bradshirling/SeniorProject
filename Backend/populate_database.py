@@ -50,6 +50,9 @@ def split_documents(documents: list[Document]):
 
 def add_to_chroma(chunks: list[Document]):
     # Load the existing database.
+    if not os.path.exists(CHROMA_PATH):
+        os.makedirs(CHROMA_PATH)
+        
     db = Chroma(
         persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
     )
@@ -109,9 +112,8 @@ def restart_flask():
 
 def clear_database():
     if os.path.exists(CHROMA_PATH):
-        shutil.rmtree(CHROMA_PATH)
-    restart_flask()
-
+        shutil.rmtree(CHROMA_PATH)  
+    restart_flask()      
 
 if __name__ == "__main__":
     main()

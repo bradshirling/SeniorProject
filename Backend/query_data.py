@@ -12,7 +12,8 @@ You are answering a student's question based only on the following official univ
 
 {context}
 
-Answer in 250 words or less unless absolouteley needed. If the context does not contain an answer, say "I don't have enough information to answer that."
+Always answer in 250 words or less. Be concise and to the point, not including unecessary details or information. 
+If the context does not contain an answer, say "I don't have enough information to answer that."
 
 Do not make up any information.
 
@@ -35,7 +36,7 @@ def query_rag(query_text: str):
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
     # Retrieve documents with scores
-    results = db.similarity_search_with_score(query_text, k=5)
+    results = db.similarity_search_with_score(query_text, k=3)
 
     # Set a threshold to filter out low-quality matches
     RELEVANCE_THRESHOLD = 0.3  # Adjust as needed
@@ -44,7 +45,7 @@ def query_rag(query_text: str):
     # If no highly relevant results, return a fallback message
     if not filtered_results:
         print("No highly relevant documents found. Please refine your query.")
-        return {"response": "I'm not sure. Can you ask in a different way?", "sources": []}
+        return {"response": "I'm not sure. Can you ask in a different way? Also, the database may need to be updated by the admin.", "sources": []}
 
     # Concatenate only the most relevant documents
     context_text = "\n\n---\n\n".join([doc.page_content for doc in filtered_results])

@@ -6,79 +6,162 @@
     <title>TSU Chatbot</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui,'Inter',sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url("tnstateimg.jpeg");
-            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            background-color: #eef1f6;
+            overflow: hidden; /* Prevents scrolling on the whole page */
+        }
+        
+        .profile-pic {
+            width: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+        /* Chat Container */
+        .chat-container {
+            width: 590px;
+            height: 625px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;   
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: rgb(28,138,223);
+            color: rgb(249, 249, 249);
+            padding: 2px;
             text-align: center;
+            font-size: 19px;
+            font-weight: 550;
+            letter-spacing: 1px;
+            border: 2px solid #0056b3;
         }
 
-        h1 {
-            color: #342aeb;
+        /* Chat History */
+        .chat-history {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;  
         }
 
-        h2 {
-            margin-bottom: 15px;
+        .chat-history::-webkit-scrollbar {
+            width: 6px;
         }
 
-        input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            font-size: 16px;
+        .chat-history::-webkit-scrollbar-thumb {
+            background-color: #a09f9f;
+            border-radius: 10px;
+        }
+
+        /* Chat Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 75%;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+            display: inline-block;
+            box-shadow: 2px 4px 10px rgba(0, 4, 10, 0.144);
+            animation: fadeIn 0.4s ease-in-out; 
+        }
+
+        .user {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot {
+            background-color: #ecf0f1;
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Message Sources */
+        .sources {
+            font-size: 12px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Input Section */
+        .input-area {
+            display: flex;
+            border-top: 2px solid #ddd;
+            background: white;
+            padding: 12px;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            font-size: 14px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 15px;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.2s ease-in-out;
+            background: #f9fafb;
+        }
+
+        input:focus {
+            border: 1px solid #007bff;
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #342aeb;
+            margin-left: 10px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: background 0.3s;
+            border: 2px solid #0056b3;
         }
 
         button:hover {
-            background-color: #250587;
+            background-color: #0056b3;
         }
 
-        pre {
-            background: #f4f4f4;
-            padding: 15px;
-            text-align: left;
-            overflow-x: auto;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .error {
-            color: red;
-            font-weight: bold;
+        /* Fade-in animation for messages */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         footer {
             text-align: center;
             padding: 10px;
-            background-color: #000000;
             bottom: 0;
             right: 0;
             position: fixed;
@@ -94,28 +177,30 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>TSU Chatbot</h1>
-        <div>
-            <h2>Enter a question</h2>
-            <input type="text" id="query-input" placeholder="Enter your question">
-            <button id="query-btn">Submit</button>
-            <pre id="query-results"></pre>
+
+    <div class="chat-container">
+        <div class="chat-header">TSU Chatbot<img src="images/Tigerpfp.png" alt = "cartoon friendly tiger" class="profile-pic"></div>
+        <div class="chat-history" id="chat-history"></div>
+        
+        <div class="input-area">
+            <input type="text" id="query-input" placeholder="Ask a question...">
+            <button id="query-btn">Send</button>
         </div>
     </div>
 
     <script>
-        const handleQuery = async () => {
-            const query = document.getElementById('query-input').value;
-            const resultElement = document.getElementById('query-results');
-            resultElement.textContent = "Loading...";
 
+        document.getElementById('query-btn').addEventListener('click', async () => {
+            const query = document.getElementById('query-input').value.trim();
+            if (!query) return;
+
+            appendMessage(query, 'user');
+            document.getElementById('query-input').value = ""; // Clear input
+            
             try {
                 const response = await fetch('http://127.0.0.1:5000/query', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query }),
                 });
 
@@ -125,26 +210,46 @@
 
                 const data = await response.json();
                 if (data.response) {
-                    const sourcesList = data.sources.map(source => `<li>${source}</li>`).join('');
-                    resultElement.innerHTML = `
-                        <h3>Response:</h3>
-                        <p>${data.response}</p>
-                        <h3>Sources:</h3>
-                        <ul>${sourcesList}</ul>
-                    `;
+                    appendMessage(data.response, 'bot', data.sources);
                 } else if (data.error) {
-                    resultElement.innerHTML = `<span class="error">Error: ${data.error}</span>`;
+                    appendMessage(`Error: ${data.error}`, 'bot');
                 }
             } catch (error) {
-                resultElement.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                appendMessage(`Error: ${error.message}`, 'bot');
             }
-        };
-        document.getElementById('query-btn').addEventListener('click', handleQuery);
+        });
 
-        document.getElementById('query-input').addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                handleQuery();
-            }    
+        //Greeting message to user from our Chatbot
+        document.addEventListener("DOMContentLoaded", () => {
+            appendMessage("Hi there! 👋 Welcome to TSU's Chatbot, your personal guide to the enrollment and admissions process at\
+            Tennessee State University, home of the Tigers! Whether you have questions about applications, deadlines, financial aid, or anything related,\
+            I’m here to help. How can I assist you today?", "bot");
+        });
+
+        //Appends message to the chatbot history
+        function appendMessage(text, sender, sources = []) {
+            const chatHistory = document.getElementById("chat-history");
+
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+            messageDiv.innerHTML =  `<p>${text.replace(/\n/g, '<br>')}</p>`; //Formatting bots response 
+
+            if (sender === "bot" && sources.length > 0) {
+                const sourcesDiv = document.createElement("div");
+                sourcesDiv.classList.add("sources");
+                sourcesDiv.innerHTML = `<strong>Sources:</strong><ul>${sources.map(source => `<li>${source}</li>`).join('')}</ul>`;
+                messageDiv.appendChild(sourcesDiv);
+            }
+
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll to latest message
+        }
+
+        // Allows message to be sent by pressing enter
+        document.getElementById('query-input').addEventListener('keypress', function(event) {
+            if (event.key === "Enter") {
+                document.getElementById('query-btn').click();
+            }
         });
     </script>
 </body>
