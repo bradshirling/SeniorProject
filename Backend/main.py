@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import query_data
@@ -21,8 +21,7 @@ def query():
         return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
- # List all PDF files in the data folder   
+  
 @app.route('/get-files', methods=['GET'])   
 def get_files():
     try:
@@ -30,8 +29,7 @@ def get_files():
         return jsonify({"files": files})
     except Exception as e:
         return jsonify({"error": str(e)}), 500    
-    
- # Upload a PDF   
+     
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -82,6 +80,11 @@ def clear_chroma_database():
         return jsonify({"message": "Chroma database cleared successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/files/<path:filename>')
+def serve_file(filename):
+    """Serve PDF files from the data directory."""
+    return send_from_directory(DATA_FOLDER, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
