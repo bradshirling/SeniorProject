@@ -6,7 +6,7 @@ from populate_database import clear_database, reload_documents
 
 app = Flask(__name__)
 CORS(app)
-DATA_FOLDER = '/Users/sab/Desktop/SeniorProject/data'
+DATA_FOLDER = 'data'
 
 @app.route('/query', methods=['POST'])
 def query():
