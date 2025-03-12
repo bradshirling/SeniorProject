@@ -154,11 +154,14 @@
         }
 
         footer {
-            text-align: center;
-            padding: 10px;
+            position: fixed;
             bottom: 0;
             right: 0;
-            position: fixed;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
         }
 
         footer a {
@@ -182,11 +185,16 @@
     </div>
     <script>
         document.getElementById('query-btn').addEventListener('click', async () => {
-            const query = document.getElementById('query-input').value.trim();
+            const inputField = document.getElementById('query-input');
+            const query = inputField.value.trim();
+            const sendButton = document.getElementById('query-btn');
             if (!query) return;
 
             appendMessage(query, 'user');
-            document.getElementById('query-input').value = ""; // Clear input
+            inputField.value = ""; 
+            inputField.disabled = true; 
+            sendButton.disabled = true;
+            inputField.placeholder = "Loading...";
             
             try {
                 const response = await fetch('http://127.0.0.1:5000/query', {
@@ -207,6 +215,11 @@
                 }
             } catch (error) {
                 appendMessage(`Error: ${error.message}`, 'bot');
+            } finally {
+                inputField.disabled = false;
+                sendButton.disabled = false;
+                inputField.placeholder = "Ask a question...";
+                inputField.focus();
             }
         });
 

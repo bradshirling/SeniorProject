@@ -171,10 +171,9 @@
         const viewFilesBtn = document.getElementById('viewFilesBtn');
         const fileList = document.getElementById('fileList');
 
-        if (localStorage.getItem('authenticated') === 'true') {
-            loginContainer.style.display = 'none';
-            adminContainer.style.display = 'block';
-        }
+        localStorage.removeItem('authenticated');
+        loginContainer.style.display = 'block';
+        adminContainer.style.display = 'none';
 
         loginBtn.addEventListener('click', () => {
             if (passwordField.value === correctPassword) {
@@ -190,6 +189,7 @@
             localStorage.removeItem('authenticated');
             loginContainer.style.display = 'block';
             adminContainer.style.display = 'none';
+            passwordField.value = '';
         });
 
         passwordField.addEventListener('keydown', (event) => {
@@ -283,7 +283,7 @@
                 .then(data => {
                     alert(data.message || data.error);
                 })
-                .catch(() => alert(filename + ' deleted successfully'));
+                .catch(() => alert(filename + ' deleted successfully. Remember to update the database.'));
                 fileList.style.display = 'none';
             }
         }
